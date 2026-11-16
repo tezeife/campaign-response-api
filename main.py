@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import pandas as pd
 import joblib
 
@@ -9,7 +9,7 @@ app = FastAPI()
 
 # Load model and feature list
 model = joblib.load(
-     "campaign_response_rf_model_compressed.pkl"
+    "campaign_response_rf_model_compressed.pkl"
 )
 
 features = joblib.load(
@@ -18,13 +18,23 @@ features = joblib.load(
 
 
 class CustomerData(BaseModel):
-    Total_Sales: float
-    Unique_Products: int
-    Number_of_Invoices: int
-    nps: float
-    n_comp: int
-    n_communications: int
-    loyalty: int
+    Total_Sales: float = Field(ge=0)
+    Unique_Products: int = Field(ge=0)
+    Number_of_Invoices: int = Field(ge=0)
+
+    nps: float = Field(
+        ge=0,
+        le=10
+    )
+
+    n_comp: int = Field(ge=0)
+
+    n_communications: int = Field(ge=0)
+
+    loyalty: int = Field(
+        ge=0,
+        le=1
+    )
 
 
 @app.get("/")
